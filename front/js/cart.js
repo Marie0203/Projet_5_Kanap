@@ -4,6 +4,7 @@ retrieveItemsFromCache()
 cart.forEach(async (item) => {
   let produit = await getProductDetails(item.id)
   displayItem(produit)
+  
 })
 
 const orderButton = document.querySelector("#order")
@@ -172,77 +173,126 @@ function saveNewDataToCache(item) {
     localStorage.setItem(key, dataToSave)
 }
 
+
 function submitForm(e) {
-    e.preventDefault()
-    if (cart.length === 0) {
-      alert("Please select items to buy")
-      return
+  e.preventDefault()
+  if (cart.length === 0) {
+    alert("Please select items to buy")
+    return
+  }
+
+  if (isAddressInvalid()) return
+  if (isEmailInvalid()) return
+  if (isFirstNameInvalid()) return
+  if (isLastNameInvalid()) return
+  if (isCityInvalid()) return
+
+  const body = makeRequestBody()
+  fetch("http://localhost:3000/api/products/order", {
+    method: "POST",
+    body: JSON.stringify(body),
+    headers: {
+      "Content-Type": "application/json"
     }
-  
-    if (isFormInvalid()) return
-    if (isEmailInvalid()) return
-  
-    const body = makeRequestBody()
-    fetch("http://localhost:3000/api/products/order", {
-      method: "POST",
-      body: JSON.stringify(body),
-      headers: {
-        "Content-Type": "application/json"
-      }
+  })
+    .then((res) => res.json())
+    .then((data) => {
+      const orderId = data.orderId
+      window.location.href = "/html/confirmation.html" + "?orderId=" + orderId
     })
-      .then((res) => res.json())
-      .then((data) => console.log(data))
+    .catch((err) => console.error(err))
 }
-  function isEmailInvalid() {
-    const email = document.querySelector("#email").value
-    const regex = /^[A-Za-z0-9+_.-]+@(.+)$/
-    if (regex.test(email) === false) {
-      alert("Merci d'entrer un email valide")
-      return true
-    }
-    return false
+
+function makeRequestBody() {
+  const form = document.querySelector(".cart__order__form")
+  const firstName = form.elements.firstName.value
+  const lastName = form.elements.lastName.value
+  const address = form.elements.address.value
+  const city = form.elements.city.value
+  const email = form.elements.email.value
+  const body = {
+    contact: {
+      firstName: firstName,
+      lastName: lastName,
+      address: address,
+      city: city,
+      email: email
+    },
+    products: getIdsFromCache()
   }
-  
-  function isFormInvalid() {
-    const form = document.querySelector(".cart__order__form")
-    const inputs = form.querySelectorAll("input")
-    inputs.forEach((input) => {
-      if (input.value === "") {
-        alert("Merci de remplir tous les champs")
-        return true
-      }
-      return false
-    })
+  return body
+}
+
+function getIdsFromCache() {
+  const numberOfProducts = localStorage.length
+  const ids = []
+  for (let i = 0; i < numberOfProducts; i++) {
+    const key = localStorage.key(i)
+    const id = key.split("-")[0]
+    ids.push(id)
   }
-  
-  function makeRequestBody() {
-    const form = document.querySelector(".cart__order__form")
-    const firstName = form.elements.firstName.value
-    const lastName = form.elements.lastName.value
-    const address = form.elements.address.value
-    const city = form.elements.city.value
-    const email = form.elements.email.value
-    const body = {
-      contact: {
-        firstName: firstName,
-        lastName: lastName,
-        address: address,
-        city: city,
-        email: email
-      },
-      products: getIdsFromCache()
-    }
-    return body
+  return ids
+}
+
+function isFirstNameInvalid() {
+  const firstName = document.querySelector("#firstName").value
+  const regex = /^[a-zA-Z]+(?:[\s-][a-zA-Z]+)*$/
+  if (regex.test(firstName) === false) {
+    let firstNameErrorMsg = document.getElementById('firstNameErrorMsg');
+    firstNameErrorMsg.innerText = "Merci de renseigner un prénom valide";
+    
+    return true
   }
-  
-  // Récupération des ID
-  function getIdsFromCache() {
-    const numberOfProducts = localStorage.length
-    const ids = []
-    for (let i = 0; i < numberOfProducts; i++) {
-      const key = localStorage.key(i)
-      const id = key.split("-")[0]
-      ids.push(id)
-    }
-    return ids
+  return false
+}
+
+function isLastNameInvalid() {
+  const lastName = document.querySelector("#lastName").value
+  const regex = /^[a-zA-Z]+(?:[\s-][a-zA-Z]+)*$/
+  if (regex.test(lastName) === false) {
+    let lastNameErrorMsg = document.getElementById('lastNameErrorMsg');
+    lastNameErrorMsg.innerText = "Merci de renseigner un nom valide";
+    
+    return true
   }
+  return false
+}
+
+
+function isEmailInvalid() {
+  const email = document.querySelector("#email").value
+  const regex = /^[A-Za-z0-9+_.-]+@(.+)$/
+  if (regex.test(email) === false) {
+    let emailErrorMsg = document.getElementById('emailErrorMsg');
+    emailErrorMsg.innerText = "Merci de renseigner une adresse email valide";
+    
+    return true
+  }
+  return false
+}
+
+function isAddressInvalid() {
+  const address = document.querySelector("#address").value
+  const regex = /^[#.0-9a-zA-ZÀ-ÿ\s,'-]{2,60}$/
+  if (regex.test(address) === false) {
+    let addressErrorMsg = document.getElementById('addressErrorMsg');
+    addressErrorMsg.innerText = "Merci de renseigner une adresse valide";
+    
+    return true
+  }
+  return false
+}
+
+function isCityInvalid() {
+  const city = document.querySelector("#city").value
+  const regex = /^[a-zA-Z]+(?:[\s-][a-zA-Z]+)*$/
+  if (regex.test(city) === false) {
+    let cityErrorMsg = document.getElementById('cityErrorMsg');
+    cityErrorMsg.innerText = "Merci de renseigner une ville valide";
+    
+    return true
+  }
+  return false
+}
+
+
