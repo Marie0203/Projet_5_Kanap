@@ -58,23 +58,32 @@ function handleClick() {
   if (isOrderInvalid(color, quantity)) return
   saveOrder(color, quantity)
   redirectToCart()
-}
+  }
+
 
 function saveOrder(color, quantity) {
   const key = `${id}-${color}`
   const data = {
     id: id,
     color: color,
-    quantity: quantity,
+    quantity: Number(quantity)
   }
   localStorage.setItem(key, JSON.stringify(data))
+  alert("Le produit à bien été ajouter au panier")
 }
+
 function isOrderInvalid(color, quantity) {
   if (color == null || color === "" || quantity == null || quantity == 0) {
-    alert("Veuillez choisir une quantité et une couleur")
+    alert("Merci de sélectionner une couleur et une quantité")
     return true
   }
 }
 function redirectToCart() {
   window.location.href = "cart.html"
 }
+
+
+
+
+
+
