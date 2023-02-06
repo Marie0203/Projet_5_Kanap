@@ -1,7 +1,9 @@
+// Récupération de l'id du produit sélectionné en page d'accueil dans l'URL //
 const queryString = window.location.search
 const urlParams = new URLSearchParams(queryString)
 const id = urlParams.get("id")
 
+// Récupération des articles de l'API //
 fetch(`http://localhost:3000/api/products/${id}`)
   .then((response) => response.json())
   .then((res) => productData(res))
@@ -48,6 +50,7 @@ function addColors(colors) {
   }
 }
 
+// Gestion du panier //
 const button = document.querySelector("#addToCart")
 button.addEventListener("click", handleClick)
 

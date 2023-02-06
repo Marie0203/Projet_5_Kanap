@@ -4,7 +4,6 @@ retrieveItemsFromCache()
 cart.forEach(async (item) => {
   let produit = await getProductDetails(item.id)
   displayItem(produit)
-  
 })
 
 const orderButton = document.querySelector("#order")
@@ -173,11 +172,11 @@ function saveNewDataToCache(item) {
     localStorage.setItem(key, dataToSave)
 }
 
-
+// Envoie du formulaire //
 function submitForm(e) {
   e.preventDefault()
   if (cart.length === 0) {
-    alert("Please select items to buy")
+    alert("Merci d'ajouter un article")
     return
   }
 
@@ -203,6 +202,7 @@ function submitForm(e) {
     .catch((err) => console.error(err))
 }
 
+// Récupération des données du formulaire //
 function makeRequestBody() {
   const form = document.querySelector(".cart__order__form")
   const firstName = form.elements.firstName.value
@@ -234,6 +234,7 @@ function getIdsFromCache() {
   return ids
 }
 
+// Vérification de la validation des entrées //
 function isFirstNameInvalid() {
   const firstName = document.querySelector("#firstName").value
   const regex = /^[a-zA-Z]+(?:[\s-][a-zA-Z]+)*$/
