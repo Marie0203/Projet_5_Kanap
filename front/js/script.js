@@ -1,9 +1,9 @@
-// On récupère toutes les données de l'api
+// On récupère toutes les données de l'api //
 fetch("http://localhost:3000/api/products")
     .then((response) => response.json())
     .then((data) => addProducts(data))
 
-// Création des produits via la liste récupérée
+// Création des produits via la liste récupérée //
 function addProducts(kanap) {
     kanap.forEach((kanap) => {
         const {_id, imageUrl, altTxt, name, description } = kanap
@@ -19,14 +19,14 @@ function addProducts(kanap) {
     })
 }
 
-// Insertion de l'élément "a"
+// Insertion de l'élément "a" //
 function addAnchor(id) {
     const anchor = document.createElement("a")
     anchor.href = "./product.html?id=" + id
     return anchor
 }
 
-// Insertion de l'élément "article"
+// Insertion de l'élément "article" //
 function appendArticleToAnchor(anchor, article) {
     const items = document.querySelector("#items")
     if (items) {
@@ -35,7 +35,7 @@ function appendArticleToAnchor(anchor, article) {
     }
 }
 
-// Insertion de l'image
+// Insertion de l'image //
 function addImage(imageUrl, altTxt) {
     const image = document.createElement("img")
     image.src = imageUrl
@@ -43,7 +43,7 @@ function addImage(imageUrl, altTxt) {
     return image
 }
 
-// Insertion du titre "h3"
+// Insertion du titre "h3" //
 function addH3(name) {
     const h3 = document.createElement("h3")
     h3.textContent = name
@@ -51,7 +51,7 @@ function addH3(name) {
     return h3
 }
 
-// Insertion de la desccription "p"
+// Insertion de la desccription "p" //
 function addParagraph(description) {
     const p = document.createElement("p")
     p.textContent = description

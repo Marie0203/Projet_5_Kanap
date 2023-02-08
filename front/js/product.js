@@ -64,34 +64,63 @@ button.addEventListener("click", handleClick)
 function handleClick() {
   const color = document.querySelector("#colors").value
   const quantity = document.querySelector("#quantity").value
-
-  if (isOrderInvalid(color, quantity)) return
+  
+  
   saveOrder(color, quantity)
   redirectToCart()
-  }
 
+}
 
+// Enregistrer la commande //
 function saveOrder(color, quantity) {
   const key = `${id}-${color}`
   const data = {
     id: id,
     color: color,
-    quantity: Number(quantity)
+    quantity: Number(quantity),
   }
+  // SI la colors ne vaut rien, veuillez choisir une couleur //
+  if (color == '') {
+    alert('Veuillez sélectionner une couleur');
+    return;
+  }
+
+  //SI NON SI la quantity est inférieur à 1 veuillez choisir une quantités valide //
+  else if (quantity < 1) {
+    alert('Veuillez sélectionner un nombre d\'articles souhaités');
+    return;
+  }
+
+
+  //SI NON SI la quantity est supérieur à 100 veuillez choisir une quantités entre 1 à 100 produits //
+  else if (quantity > 100) {
+    alert('Vous pouvez seulement sélectionner 1 à 100 produits');
+    return;
+  }
+
+  let productInLocalStorage =  JSON.parse(localStorage.getItem('product'));
+
+  // j'ajoute les produits sélectionnés dans le localStorage
+  const addProductLocalStorage = () => {
+  // je récupère la sélection de l'utilisateur dans le tableau de l'objet :
+  // on peut voir dans la console qu'il y a les données,
+  // mais pas encore stockées dans le storage à ce stade
+
+  productInLocalStorage.push(selection);
+  // je stocke les données récupérées dans le localStorage :
+  // JSON.stringify permet de convertir les données au format JavaScript en JSON 
+  // vérifier que key et value dans l'inspecteur contiennent bien des données
+  localStorage.setItem('product', JSON.stringify(productInLocalStorage));
+  }
+
   localStorage.setItem(key, JSON.stringify(data))
   alert("Le produit à bien été ajouter au panier")
 }
 
-function isOrderInvalid(color, quantity) {
-  if (color == null || color === "" || quantity == null || quantity == 0) {
-    alert("Merci de sélectionner une couleur et une quantité")
-    return true
-  }
-}
+// Redirection vers le panier //
 function redirectToCart() {
   window.location.href = "cart.html"
 }
-
 
 
 
