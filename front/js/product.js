@@ -46,80 +46,97 @@ function addDescription(description) {
 
 // Couleurs //
 function addColors(colors) {
-  const select = document.querySelector("#colors")
-  if (select != null) {
-    colors.forEach((color) => {
-      const option = document.createElement("option")
-      option.value = color
-      option.textContent = color
-      select.appendChild(option)
-    })
+  let select = document.querySelector('#colors');
+// Boucle pour les couleurs //
+  for (let i = 0; i < colors.length ; i++) {
+    let option = document.createElement('option');
+      option.value = colors[i];
+      option.textContent = colors[i];
+      select.append(option);
+    }
   }
-}
 
-// Gestion du panier //
+
+// Gestion du bouton "ajouter au panier" //
 const button = document.querySelector("#addToCart")
 button.addEventListener("click", handleClick)
 
-function handleClick() {
-  const color = document.querySelector("#colors").value
-  const quantity = document.querySelector("#quantity").value
+function handleClick(e) {
+      
+  e.preventDefault();
+  
+  // Selection des id = #colors et #quantity //
+  let colors = document.querySelector('#colors').value;
+  let quantity = document.querySelector('#quantity').value;
   
   
-  saveOrder(color, quantity)
-  redirectToCart()
+  // Si la couleur ne vaut rien, veuillez choisir une couleur //
+  if(colors == ''){
+        alert('Veuillez sélectionner une couleur');
+        return;
+    }
 
-}
+    // Si non si la quantity est inférieur à 1 veuillez choisir une quantités valide //
+    else if (quantity<1){
+        alert('Veuillez sélectionner le nombre d\'articles souhaités');
+        return;
+    }
 
-// Enregistrer la commande //
-function saveOrder(color, quantity) {
-  const key = `${id}-${color}`
-  const data = {
-    id: id,
-    color: color,
-    quantity: Number(quantity),
+    
+    // Si non si la quantity est supérieur à 100 veuillez choisir une quantités entre 1 à 100 produits //
+    else if (quantity>100){
+      alert('Vous pouvez seulement sélectionner 1 à 100 produits.');
+      return;
+    }
+    
+    
+    // SI NON votre commande a bien ete enregistrée //
+    else{
+      alert('Votre article a bien été ajouté au panier');  
+      window.location.href = "cart.html" 
+    }
+    
+    
+    // Enregistrement des valeurs dans un objet //
+    const optionProduct = { 
+      id: id,
+      colors: colors,
+      quantity: Number(quantity),
+    }
+    
+    // Déclaration de la variable "localStorageProducts" dans laquelles on met les key et les values qui sont dans le local stockage //
+    let localStorageProducts = JSON.parse(localStorage.getItem("produits"))
+  
+  // Si il y a deja des produit dans le locale storage //
+  if (localStorageProducts) {
+    
+    // On recherche si l'id et la couleur d'un article est déjà présent //
+    let item = localStorageProducts.find(
+      (item) =>
+      item.id == optionProduct.id && item.colors == optionProduct.colors
+    );
+      
+      // Si oui on additionne les quantités des articles de même id et couleur et mise à jour du localstorageProducts //
+      if (item) {
+        item.quantity = item.quantity + optionProduct.quantity;
+        localStorage.setItem("produits", JSON.stringify(localStorageProducts));
+        
+        return;
+    }
+
+    // Si l'article n'est pas déjà dans le local storage alors on push le nouvel article sélectionner //
+    localStorageProducts.push(optionProduct);
+    localStorage.setItem("produits", JSON.stringify(localStorageProducts));
+   
+  } 
+  
+  else {
+    //  S'il n'y a pas de produits dans le locale stockage alors création d'un tableau dans le lequel on push l'objet "optionProduct";
+    let newTabLocalStorage = [];
+    newTabLocalStorage.push(optionProduct);
+    localStorage.setItem("produits", JSON.stringify(newTabLocalStorage));
+    
   }
-  // SI la colors ne vaut rien, veuillez choisir une couleur //
-  if (color == '') {
-    alert('Veuillez sélectionner une couleur');
-    return;
-  }
-
-  //SI NON SI la quantity est inférieur à 1 veuillez choisir une quantités valide //
-  else if (quantity < 1) {
-    alert('Veuillez sélectionner un nombre d\'articles souhaités');
-    return;
-  }
-
-
-  //SI NON SI la quantity est supérieur à 100 veuillez choisir une quantités entre 1 à 100 produits //
-  else if (quantity > 100) {
-    alert('Vous pouvez seulement sélectionner 1 à 100 produits');
-    return;
-  }
-
-  let productInLocalStorage =  JSON.parse(localStorage.getItem('product'));
-
-  // j'ajoute les produits sélectionnés dans le localStorage
-  const addProductLocalStorage = () => {
-  // je récupère la sélection de l'utilisateur dans le tableau de l'objet :
-  // on peut voir dans la console qu'il y a les données,
-  // mais pas encore stockées dans le storage à ce stade
-
-  productInLocalStorage.push(selection);
-  // je stocke les données récupérées dans le localStorage :
-  // JSON.stringify permet de convertir les données au format JavaScript en JSON 
-  // vérifier que key et value dans l'inspecteur contiennent bien des données
-  localStorage.setItem('product', JSON.stringify(productInLocalStorage));
-  }
-
-  localStorage.setItem(key, JSON.stringify(data))
-  alert("Le produit à bien été ajouter au panier")
-}
-
-// Redirection vers le panier //
-function redirectToCart() {
-  window.location.href = "cart.html"
 }
 
 
